@@ -1,13 +1,13 @@
-import { IsBoolean, IsDate, IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
 export class UserRequestDto {
-    @IsString()
-    firstName: string;
+  @IsString()
+  firstName: string;
 
-    @IsString()
-    @IsOptional()
-    lastName: string;
+  @IsString()
+  @IsOptional()
+  lastName: string;
 
-    @IsBoolean()
-    isActive: boolean = true;
+  @IsBoolean()
+  isActive: boolean = true;
 }

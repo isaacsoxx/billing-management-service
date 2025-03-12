@@ -1,37 +1,93 @@
-import { Injectable } from '@nestjs/common';
-import { iUsersService } from './interface';
-import { UserRequestDto } from '../dtos';
-import { Repository } from 'typeorm';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import {
+  ApiResponseDto,
+  UserReponseDto as UserResponseDto,
+  UserRequestDto,
+} from '../dtos';
+import { iUsersService } from '.';
+import { iUsersRepository } from '../repository';
 import { Users } from '../entities';
-import { InjectRepository } from '@nestjs/typeorm';
-import { ObjectId } from 'mongodb';
+import { randomUUID } from 'crypto';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class UsersService implements iUsersService {
-    constructor(
-        @InjectRepository(Users)
-        private readonly usersRepository: Repository<Users>
-    ) { }
-    
-    async createUser(userToCreate: UserRequestDto) {
-        const newUser = this.usersRepository.create(userToCreate);
-        return await this.usersRepository.save(newUser);
+  constructor(
+    @Inject('iUsersRepository')
+    private readonly usersRepository: iUsersRepository,
+  ) {}
+
+  async createUser(
+    userToCreate: UserRequestDto,
+  ): Promise<ApiResponseDto<string>> {
+    const userResource = new Users(userToCreate);
+    userResource.uuid = randomUUID();
+
+    const result = await this.usersRepository.createUser(userResource);
+
+    if (result instanceof Users) {
+      return new ApiResponseDto(
+        HttpStatus.CREATED,
+        'Resource created.',
+        result.uuid,
+      );
     }
 
-    async updateUserById(id: string, userToUpdate: UserRequestDto) {
-        await this.usersRepository.update(
-            { _id: new ObjectId(id) },
-            userToUpdate
-        );
+    return new ApiResponseDto(HttpStatus.CONFLICT, 'Error creating user.');
+  }
+
+  async updateUserById(
+    uuid: string,
+    userToUpdate: UserRequestDto,
+  ): Promise<ApiResponseDto<null>> {
+    const resourceFound = await this.usersRepository.findOneUserById(uuid);
+
+    if (resourceFound) {
+      Object.assign(resourceFound, userToUpdate);
+      const result = await this.usersRepository.updateUserById(resourceFound);
+      return new ApiResponseDto(
+        HttpStatus.ACCEPTED,
+        `${result.affected} resource(s) updated.`,
+      );
     }
 
-    async findAllUsers() {
-        return await this.usersRepository.find();
+    return new ApiResponseDto(
+      HttpStatus.NOT_FOUND,
+      `User with uuid ${uuid} was not found.`,
+    );
+  }
+
+  async findAllUsers(): Promise<ApiResponseDto<UserResponseDto[]>> {
+    const result = await this.usersRepository.findAllUsers();
+    return new ApiResponseDto(
+      HttpStatus.ACCEPTED,
+      '',
+      plainToInstance(UserResponseDto, result, {
+        excludeExtraneousValues: true,
+      }),
+    );
+  }
+
+  async findOneUserById(
+    uuid: string,
+  ): Promise<ApiResponseDto<UserResponseDto | null>> {
+    const result = await this.usersRepository.findOneUserById(uuid);
+
+    if (!result) {
+      return new ApiResponseDto(
+        HttpStatus.NOT_FOUND,
+        `User with uuid ${uuid} was not found`,
+        null,
+        false,
+      );
     }
 
-    async findOneUserById(id: string) {
-        return await this.usersRepository.findOneBy(
-            { _id: new ObjectId(id) }
-        );
-    }
+    return new ApiResponseDto(
+      HttpStatus.ACCEPTED,
+      '',
+      plainToInstance(UserResponseDto, result, {
+        excludeExtraneousValues: true,
+      }),
+    );
+  }
 }

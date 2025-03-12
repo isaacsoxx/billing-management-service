@@ -1,1 +1,1 @@
-export * from './users.entity.dto';
+export * from './users.entity';

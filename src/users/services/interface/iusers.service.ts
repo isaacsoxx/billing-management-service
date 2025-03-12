@@ -1,8 +1,11 @@
-import { UserRequestDto } from "src/users/dtos";
+import { ApiResponseDto, UserReponseDto, UserRequestDto } from 'src/users/dtos';
 
 export interface iUsersService {
-    updateUserById(id: string, userToUpdate: UserRequestDto);
-    createUser(userToCreate: UserRequestDto);
-    findAllUsers();
-    findOneUserById(id: string);
+  createUser(userToCreate: UserRequestDto): Promise<ApiResponseDto<string>>;
+  updateUserById(
+    uuid: string,
+    userToUpdate: UserRequestDto,
+  ): Promise<ApiResponseDto<null>>;
+  findAllUsers(): Promise<ApiResponseDto<UserReponseDto[]>>;
+  findOneUserById(uuid: string): Promise<ApiResponseDto<UserReponseDto | null>>;
 }
