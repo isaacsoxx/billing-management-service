@@ -10,6 +10,7 @@ import { UserRequestDto } from '../dtos';
 
 @Entity()
 @Unique('UUID_UNIQUE', ['uuid'])
+@Unique('PHONE_NUMBER_UNIQUE', ['phoneNumber'])
 export class Users {
   @ObjectIdColumn()
   _id: ObjectId;
@@ -22,6 +23,9 @@ export class Users {
 
   @Column()
   lastName: string;
+
+  @Column('phoneNumber')
+  phoneNumber: string;
 
   @Column()
   isActive: boolean;

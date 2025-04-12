@@ -1,1 +1,4 @@
-export * from './api-key/api-key.guard';
+export * from './guards';
+export * from './dtos';
+export * from './services';
+export * from './auth.module';
