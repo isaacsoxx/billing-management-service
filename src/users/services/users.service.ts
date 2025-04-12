@@ -9,12 +9,15 @@ import { iUsersRepository } from '../repository';
 import { Users } from '../entities';
 import { randomUUID } from 'crypto';
 import { plainToInstance } from 'class-transformer';
+import { AuthRegisterUserRequestDto, iAwsCognitoService } from '../../auth';
 
 @Injectable()
 export class UsersService implements iUsersService {
   constructor(
     @Inject('iUsersRepository')
     private readonly usersRepository: iUsersRepository,
+    @Inject('iAwsCognitoService')
+    private readonly awsCognitoService: iAwsCognitoService,
   ) {}
 
   async createUser(
@@ -26,6 +29,16 @@ export class UsersService implements iUsersService {
     const result = await this.usersRepository.createUser(userResource);
 
     if (result instanceof Users) {
+      const authRegisterUserData: AuthRegisterUserRequestDto = {
+        phoneNumber: userResource.phoneNumber,
+        firstName: userResource.firstName,
+        password: userResource.uuid,
+      };
+      const signUpResult =
+        await this.awsCognitoService.registerUser(authRegisterUserData);
+
+      console.log(signUpResult);
+
       return new ApiResponseDto(
         HttpStatus.CREATED,
         'Resource created.',

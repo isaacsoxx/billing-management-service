@@ -8,6 +8,9 @@ export class UserReponseDto {
   firstName: string;
 
   @Expose()
+  phoneNumber: string;
+
+  @Expose()
   lastName: string;
 
   @Expose()
