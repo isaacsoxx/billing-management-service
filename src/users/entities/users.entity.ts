@@ -7,6 +7,7 @@ import {
   Unique,
 } from 'typeorm';
 import { UserRequestDto } from '../dtos';
+import { UserRoles } from '../../auth';
 
 @Entity()
 @Unique('UUID_UNIQUE', ['uuid'])
@@ -22,6 +23,12 @@ export class Users {
 
   @Column()
   lastName: string;
+
+  @Column({ type: 'string', nullable: true })
+  sponsor?: string;
+
+  @Column({ type: 'enum', enum: UserRoles })
+  role: UserRoles;
 
   @Column()
   isActive: boolean;

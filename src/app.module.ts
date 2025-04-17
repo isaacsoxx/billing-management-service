@@ -5,6 +5,6 @@ import { BillingModule } from './billing/billing.module';
 import { DatabaseModule } from './database';
 
 @Module({
-  imports: [UsersModule, BillingModule, DatabaseModule, ConfigModule],
+  imports: [ConfigModule, UsersModule, BillingModule, DatabaseModule],
 })
 export class AppModule {}

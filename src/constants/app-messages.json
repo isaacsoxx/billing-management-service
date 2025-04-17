@@ -1,0 +1,12 @@
+{
+  "users": {
+    "errors": {
+      "conflict": "Error creating user.",
+      "notFound": "User with uuid {{uuid}} was not found."
+    },
+    "success": {
+      "created": "User created.",
+      "updated": "{{count}} user(s) updated."
+    }
+  }
+}

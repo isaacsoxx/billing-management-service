@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Users } from '../entities';
-import { Repository, UpdateResult } from 'typeorm';
-import { iUsersRepository } from './interface/iusers.repository';
 import { ObjectId } from 'mongodb';
+import { Repository, UpdateResult } from 'typeorm';
+import { UserRoles } from '../../auth';
+import { Users } from '../entities';
+import { iUsersRepository } from '../';
 
 @Injectable()
 export class UsersRepository implements iUsersRepository {
@@ -25,12 +26,19 @@ export class UsersRepository implements iUsersRepository {
 
     return result;
   }
-
-  async findAllUsers(): Promise<Users[]> {
-    return await this.usersRepository.find();
+  async findAllByRole(role: UserRoles): Promise<Users[]> {
+    return await this.usersRepository.find({
+      where: { role },
+    });
   }
 
   async findOneUserById(uuid: string): Promise<Users | null> {
     return await this.usersRepository.findOneBy({ uuid });
+  }
+
+  async findAllSubscriptionsById(sponsorId: string): Promise<Users[]> {
+    return await this.usersRepository.find({
+      where: { sponsor: sponsorId },
+    });
   }
 }
