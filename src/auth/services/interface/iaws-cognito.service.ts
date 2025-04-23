@@ -1,9 +1,7 @@
-import {
-  AuthLoginUserRequestDto,
-  AuthRegisterUserRequestDto,
-} from 'src/auth/dtos';
+import { AuthAttributesDto } from '../..';
+import { Users } from '../../../users';
 
 export interface iAwsCognitoService {
-  registerUser(authRegisterUserRequestDto: AuthRegisterUserRequestDto);
-  authenticateUser(authLoginUserRequestDto: AuthLoginUserRequestDto);
+  registerUser(userResource: Users): Promise<void>;
+  // getUserDetails(accessToken: string): Promise<AuthAttributesDto>;
 }

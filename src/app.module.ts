@@ -7,11 +7,12 @@ import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
+    ConfigModule,
     UsersModule,
     BillingModule,
     DatabaseModule,
-    ConfigModule,
     AuthModule,
   ],
+  providers: [],
 })
 export class AppModule {}

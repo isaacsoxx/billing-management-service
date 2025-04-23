@@ -1,4 +1,6 @@
-import { ApiResponseDto, UserReponseDto, UserRequestDto } from 'src/users/dtos';
+import { UserRoles } from '../../../auth';
+import { ApiResponseDto } from '../../../common';
+import { UserResponseDto, UserRequestDto } from '../..';
 
 export interface iUsersService {
   createUser(userToCreate: UserRequestDto): Promise<ApiResponseDto<string>>;
@@ -6,6 +8,16 @@ export interface iUsersService {
     uuid: string,
     userToUpdate: UserRequestDto,
   ): Promise<ApiResponseDto<null>>;
-  findAllUsers(): Promise<ApiResponseDto<UserReponseDto[]>>;
-  findOneUserById(uuid: string): Promise<ApiResponseDto<UserReponseDto | null>>;
+  findOneUserById(
+    uuid: string,
+  ): Promise<ApiResponseDto<UserResponseDto | null>>;
+
+  createSubscription(
+    sponsorId: string,
+    userToCreate: UserRequestDto,
+  ): Promise<ApiResponseDto<string>>;
+  findAllSubscriptionsById(
+    sponsorId: string,
+  ): Promise<ApiResponseDto<UserResponseDto[]>>;
+  findAllByRole(role: UserRoles): Promise<ApiResponseDto<UserResponseDto[]>>;
 }

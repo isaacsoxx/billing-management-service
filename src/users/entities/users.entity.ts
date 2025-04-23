@@ -7,6 +7,7 @@ import {
   Unique,
 } from 'typeorm';
 import { UserRequestDto } from '../dtos';
+import { UserRoles } from '../../auth';
 
 @Entity()
 @Unique('UUID_UNIQUE', ['uuid'])
@@ -18,14 +19,20 @@ export class Users {
   @PrimaryGeneratedColumn('uuid')
   uuid: string;
 
-  @Column()
+  @Column({ type: 'string', nullable: false })
   firstName: string;
 
-  @Column()
-  lastName: string;
+  @Column({ type: 'string', nullable: true })
+  lastName?: string;
 
-  @Column('phoneNumber')
+  @Column({ type: 'string', nullable: false })
   phoneNumber: string;
+
+  @Column({ type: 'string', nullable: true })
+  sponsor?: string;
+
+  @Column({ type: 'enum', enum: UserRoles })
+  role: UserRoles;
 
   @Column()
   isActive: boolean;

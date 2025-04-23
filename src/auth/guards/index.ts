@@ -1,1 +1,1 @@
-export * from './api-key';
+export * from './jwt-auth/jwt-auth.guard';

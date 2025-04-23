@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import config from '../config/config';
-import { AwsCognitoService } from './services';
+import { AwsCognitoService, JwtVerificationService } from './services';
 
 @Module({
   imports: [
@@ -15,11 +15,19 @@ import { AwsCognitoService } from './services';
       provide: 'iAwsCognitoService',
       useClass: AwsCognitoService,
     },
+    {
+      provide: 'iJwtVerificationService',
+      useClass: JwtVerificationService,
+    },
   ],
   exports: [
     {
       provide: 'iAwsCognitoService',
       useClass: AwsCognitoService,
+    },
+    {
+      provide: 'iJwtVerificationService',
+      useClass: JwtVerificationService,
     },
   ],
 })

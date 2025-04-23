@@ -1,4 +1,3 @@
-export * from './api-response.dto';
 export * from './user-request.dto';
 
 export * from './user-response.dto';

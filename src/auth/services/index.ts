@@ -1,3 +1,4 @@
-export * from './aws-cognito.service';
-export * from './test/aws-cognito.service.spec';
 export * from './interface/iaws-cognito.service';
+export * from './interface/ijwt-verification.service';
+export * from './aws-cognito.service';
+export * from './jwt-verification.service';

@@ -1,15 +1,18 @@
-import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import {
-  ApiResponseDto,
-  UserReponseDto as UserResponseDto,
-  UserRequestDto,
-} from '../dtos';
+  ConflictException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
+import { randomUUID } from 'crypto';
 import { iUsersService } from '.';
+import { UserResponseDto as UserResponseDto, UserRequestDto } from '..';
+import { ApiResponseDto, getMessage, MessageType } from '../../common';
 import { iUsersRepository } from '../repository';
 import { Users } from '../entities';
-import { randomUUID } from 'crypto';
-import { plainToInstance } from 'class-transformer';
-import { AuthRegisterUserRequestDto, iAwsCognitoService } from '../../auth';
+import { iAwsCognitoService, UserRoles } from '../../auth';
 
 @Injectable()
 export class UsersService implements iUsersService {
@@ -23,30 +26,27 @@ export class UsersService implements iUsersService {
   async createUser(
     userToCreate: UserRequestDto,
   ): Promise<ApiResponseDto<string>> {
-    const userResource = new Users(userToCreate);
-    userResource.uuid = randomUUID();
+    try {
+      const userResource = new Users(userToCreate);
+      userResource.uuid = randomUUID();
 
-    const result = await this.usersRepository.createUser(userResource);
+      await this.awsCognitoService.registerUser(userResource);
 
-    if (result instanceof Users) {
-      const authRegisterUserData: AuthRegisterUserRequestDto = {
-        phoneNumber: userResource.phoneNumber,
-        firstName: userResource.firstName,
-        password: userResource.uuid,
-      };
-      const signUpResult =
-        await this.awsCognitoService.registerUser(authRegisterUserData);
+      const result = await this.usersRepository.createUser(userResource);
 
-      console.log(signUpResult);
-
-      return new ApiResponseDto(
-        HttpStatus.CREATED,
-        'Resource created.',
-        result.uuid,
+      if (result instanceof Users) {
+        return ApiResponseDto.createSuccess(
+          HttpStatus.CREATED,
+          getMessage(MessageType.app, 'users.success.created'),
+          result.uuid,
+        );
+      }
+      throw new ConflictException(
+        getMessage(MessageType.app, 'users.errors.conflict'),
       );
+    } catch (error) {
+      throw error;
     }
-
-    return new ApiResponseDto(HttpStatus.CONFLICT, 'Error creating user.');
   }
 
   async updateUserById(
@@ -58,26 +58,16 @@ export class UsersService implements iUsersService {
     if (resourceFound) {
       Object.assign(resourceFound, userToUpdate);
       const result = await this.usersRepository.updateUserById(resourceFound);
-      return new ApiResponseDto(
+      return ApiResponseDto.createSuccess(
         HttpStatus.ACCEPTED,
-        `${result.affected} resource(s) updated.`,
+        getMessage(MessageType.app, 'users.success.updated', {
+          count: result.affected,
+        }),
       );
     }
 
-    return new ApiResponseDto(
-      HttpStatus.NOT_FOUND,
-      `User with uuid ${uuid} was not found.`,
-    );
-  }
-
-  async findAllUsers(): Promise<ApiResponseDto<UserResponseDto[]>> {
-    const result = await this.usersRepository.findAllUsers();
-    return new ApiResponseDto(
-      HttpStatus.ACCEPTED,
-      '',
-      plainToInstance(UserResponseDto, result, {
-        excludeExtraneousValues: true,
-      }),
+    throw new NotFoundException(
+      getMessage(MessageType.app, 'users.errors.notFound', { uuid }),
     );
   }
 
@@ -86,16 +76,82 @@ export class UsersService implements iUsersService {
   ): Promise<ApiResponseDto<UserResponseDto | null>> {
     const result = await this.usersRepository.findOneUserById(uuid);
 
-    if (!result) {
-      return new ApiResponseDto(
-        HttpStatus.NOT_FOUND,
-        `User with uuid ${uuid} was not found`,
-        null,
-        false,
+    if (result) {
+      return ApiResponseDto.createSuccess(
+        HttpStatus.ACCEPTED,
+        '',
+        plainToInstance(UserResponseDto, result, {
+          excludeExtraneousValues: true,
+        }),
       );
     }
 
-    return new ApiResponseDto(
+    throw new NotFoundException(
+      getMessage(MessageType.app, 'users.errors.notFound', { uuid }),
+    );
+  }
+
+  async createSubscription(
+    sponsorUuid: string,
+    userToCreate: UserRequestDto,
+  ): Promise<ApiResponseDto<string>> {
+    const sponsorFound =
+      await this.usersRepository.findOneUserById(sponsorUuid);
+
+    if (sponsorFound) {
+      const subscriptionResource = new Users(userToCreate);
+      subscriptionResource.uuid = randomUUID();
+      subscriptionResource.sponsor = sponsorUuid;
+      const result =
+        await this.usersRepository.createUser(subscriptionResource);
+
+      if (result instanceof Users) {
+        return ApiResponseDto.createSuccess(
+          HttpStatus.CREATED,
+          getMessage(MessageType.app, 'users.success.created'),
+          result.uuid,
+        );
+      }
+
+      throw new ConflictException(
+        getMessage(MessageType.app, 'users.errors.conflict'),
+      );
+    }
+
+    throw new NotFoundException(
+      getMessage(MessageType.app, 'users.errors.notFound', {
+        uuid: sponsorUuid,
+      }),
+    );
+  }
+
+  async findAllSubscriptionsById(
+    sponsorId: string,
+  ): Promise<ApiResponseDto<UserResponseDto[]>> {
+    const resourceFound = await this.usersRepository.findOneUserById(sponsorId);
+
+    if (resourceFound) {
+      const result =
+        await this.usersRepository.findAllSubscriptionsById(sponsorId);
+      return ApiResponseDto.createSuccess(
+        HttpStatus.ACCEPTED,
+        '',
+        plainToInstance(UserResponseDto, result, {
+          excludeExtraneousValues: true,
+        }),
+      );
+    }
+
+    throw new NotFoundException(
+      getMessage(MessageType.app, 'users.errors.notFound'),
+    );
+  }
+
+  async findAllByRole(
+    role: UserRoles,
+  ): Promise<ApiResponseDto<UserResponseDto[]>> {
+    const result = await this.usersRepository.findAllByRole(role);
+    return ApiResponseDto.createSuccess(
       HttpStatus.ACCEPTED,
       '',
       plainToInstance(UserResponseDto, result, {
