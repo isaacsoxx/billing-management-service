@@ -2,16 +2,18 @@ import {
   AdminCreateUserCommand,
   AdminSetUserPasswordCommand,
   CognitoIdentityProviderClient,
+  ListUsersCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 import {
   ConflictException,
   Injectable,
-  InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { iAwsCognitoService } from '.';
-import { Users } from '../../users';
 import { AuthAttributesDto, UserRoles } from '..';
+import { Users } from '../../users';
+import { getMessage, MessageType } from 'src/common';
 
 @Injectable()
 export class AwsCognitoService implements iAwsCognitoService {
@@ -43,14 +45,44 @@ export class AwsCognitoService implements iAwsCognitoService {
       await this.createUserInPool(username, tempPass, role, uuid);
       await this.setPasswordPolicy(username, tempPass);
     } catch (error) {
-      throw new InternalServerErrorException(
-        'Error creating user in pool.',
-        error,
-      );
+      throw error;
     }
   }
 
-  // async getUserDetails(accessToken: string): Promise<AuthAttributesDto> {}
+  async getAuthAttributes(sub: string): Promise<AuthAttributesDto> {
+    const params = {
+      UserPoolId: this.userPoolId,
+      Filter: `sub="${sub}"`,
+      Limit: 1,
+    };
+
+    const command = new ListUsersCommand(params),
+      response = await this.cognito.send(command),
+      user = response.Users?.[0];
+    let role, uuid;
+
+    if (!user) {
+      throw new NotFoundException(
+        getMessage(MessageType.app, 'aws.errors.notFound'),
+      );
+    }
+
+    user.Attributes?.forEach((attr) => {
+      if (attr.Name === 'custom:role') role = attr.Value;
+      if (attr.Name === 'custom:uuid') uuid = attr.Value;
+    });
+
+    if (!Object.values(UserRoles).includes(role)) {
+      throw new ConflictException(
+        getMessage(MessageType.app, 'aws.errors.conflict', { role }),
+      );
+    }
+
+    return {
+      role: role as UserRoles,
+      uuid: uuid,
+    };
+  }
 
   private async createUserInPool(
     username: string,
@@ -84,14 +116,6 @@ export class AwsCognitoService implements iAwsCognitoService {
     });
 
     await this.cognito.send(createUserRequest);
-    // .then(() => {
-    //   return this.setPasswordPolicy(username, tempPass);
-    // })
-    // .catch((error) => {
-    //   console.info('Error creating user in pool');
-    //   console.error('Error details:', JSON.stringify(error, null, 2));
-    //   throw new ConflictException();
-    // });
   }
 
   private async setPasswordPolicy(username: string, tempPass: string) {
@@ -103,12 +127,5 @@ export class AwsCognitoService implements iAwsCognitoService {
     });
 
     await this.cognito.send(passwordPolicyRequest);
-    // .then(() => {
-    //   return true;
-    // })
-    // .catch((error) => {
-    //   console.error('Error setting password policy', error);
-    //   throw new ConflictException();
-    // });
   }
 }

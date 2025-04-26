@@ -14,10 +14,10 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Response } from 'express';
-import { JwtAuthGuard, UserRoles } from '../../auth';
+import { JwtAuthGuard, RolesVerifierGuard, UserRoles } from '../../auth';
 import { UserRequestDto } from '../dtos';
 import { iUsersService } from '../services';
-import { getMessage, MessageType } from '../../common';
+import { getMessage, MessageType, Roles } from '../../common';
 
 @ApiBearerAuth('access-token')
 @UseGuards(JwtAuthGuard)
@@ -28,6 +28,8 @@ export class UsersController {
   ) {}
 
   @Post()
+  @UseGuards(RolesVerifierGuard)
+  @Roles(UserRoles.Maintainer)
   @ApiOperation({
     summary: getMessage(MessageType.swagger, 'users.summary.create'),
   })
@@ -52,6 +54,8 @@ export class UsersController {
   }
 
   @Get('')
+  @UseGuards(RolesVerifierGuard)
+  @Roles(UserRoles.Maintainer)
   @ApiOperation({
     summary: getMessage(MessageType.swagger, 'users.summary.findAllByRole'),
   })
@@ -72,6 +76,8 @@ export class UsersController {
   }
 
   @Get(':uuid')
+  @UseGuards(RolesVerifierGuard)
+  @Roles(UserRoles.Maintainer, UserRoles.Admin)
   @ApiOperation({
     summary: getMessage(MessageType.swagger, 'users.summary.findOne'),
   })
@@ -93,6 +99,8 @@ export class UsersController {
   }
 
   @Put(':uuid')
+  @UseGuards(RolesVerifierGuard)
+  @Roles(UserRoles.Maintainer, UserRoles.Admin)
   @ApiOperation({
     summary: getMessage(MessageType.swagger, 'users.summary.update'),
   })
@@ -118,6 +126,8 @@ export class UsersController {
   }
 
   @Post(':sponsorUuid/subscriptions')
+  @UseGuards(RolesVerifierGuard)
+  @Roles(UserRoles.Admin)
   @ApiOperation({
     summary: getMessage(
       MessageType.swagger,
@@ -158,6 +168,8 @@ export class UsersController {
   }
 
   @Get(':sponsorUuid/subscriptions')
+  @UseGuards(RolesVerifierGuard)
+  @Roles(UserRoles.Admin)
   @ApiOperation({
     summary: getMessage(
       MessageType.swagger,

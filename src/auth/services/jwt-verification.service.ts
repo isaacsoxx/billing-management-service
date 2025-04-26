@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CognitoJwtVerifier } from 'aws-jwt-verify';
 import { iJwtVerificationService } from '.';
+import { getMessage, MessageType } from 'src/common';
 
 @Injectable()
 export class JwtVerificationService implements iJwtVerificationService {
@@ -18,11 +19,10 @@ export class JwtVerificationService implements iJwtVerificationService {
   async verifyToken(token: string): Promise<Record<string, any>> {
     try {
       const payload = await this.verifier.verify(token);
-      console.log('verified', token);
       return payload;
-    } catch (err) {
+    } catch (error) {
       throw new UnauthorizedException(
-        'Provided token might be expired or invalid.',
+        getMessage(MessageType.app, 'auth.errors.unauthorized'),
       );
     }
   }
