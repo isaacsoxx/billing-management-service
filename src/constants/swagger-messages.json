@@ -22,8 +22,10 @@
       "update": "Returns how many users were updated.",
       "createSubscription": "User successfully created.",
       "findAllSubscriptions": "List of uuid matched subscriptions."
-    },
-    "dtos": {
+    }
+  },
+  "dtos": {
+    "userRequest": {
       "firstName": {
         "example": "John",
         "description": "Required user first name."
@@ -45,6 +47,21 @@
         "description": "Role for the user.",
         "message": "Role must be either: maintainer, admin or staff."
       }
+    },
+    "userResponse": {
+      "uuid": "string",
+      "firstName": "string",
+      "lastName": "string",
+      "phoneNumber": "number",
+      "isActive": "boolean",
+      "role": "UserRoles",
+      "sponsor": "string"
+    },
+    "apiResponse": {
+      "statusCode": "number",
+      "message": "string",
+      "isSuccess": "boolean",
+      "data": "Object"
     }
   }
 }

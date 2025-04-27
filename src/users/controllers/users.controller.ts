@@ -15,9 +15,9 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Response } from 'express';
 import { JwtAuthGuard, RolesVerifierGuard, UserRoles } from '../../auth';
-import { UserRequestDto } from '../dtos';
+import { UserRequestDto, UsersResponseDto } from '../dtos';
 import { iUsersService } from '../services';
-import { getMessage, MessageType, Roles } from '../../common';
+import { ApiResponseDto, getMessage, MessageType, Roles } from '../../common';
 
 @ApiBearerAuth('access-token')
 @UseGuards(JwtAuthGuard)
@@ -36,22 +36,27 @@ export class UsersController {
   @ApiResponse({
     status: 201,
     description: getMessage(MessageType.swagger, 'users.success.create'),
+    type: String,
   })
   @ApiResponse({
     status: 400,
     description: getMessage(MessageType.swagger, 'users.errors.badRequest'),
+    type: ApiResponseDto,
   })
   @ApiResponse({
     status: 401,
     description: getMessage(MessageType.swagger, 'users.errors.unauthorized'),
+    type: ApiResponseDto,
   })
   @ApiResponse({
     status: 403,
     description: getMessage(MessageType.swagger, 'users.errors.forbidden'),
+    type: ApiResponseDto,
   })
   @ApiResponse({
     status: 409,
     description: getMessage(MessageType.swagger, 'users.errors.conflict'),
+    type: ApiResponseDto,
   })
   async create(
     @Res() res: Response,
@@ -70,18 +75,22 @@ export class UsersController {
   @ApiResponse({
     status: 202,
     description: getMessage(MessageType.swagger, 'users.success.findAllByRole'),
+    type: [UsersResponseDto],
   })
   @ApiResponse({
     status: 400,
     description: getMessage(MessageType.swagger, 'users.errors.badRequest'),
+    type: ApiResponseDto,
   })
   @ApiResponse({
     status: 401,
     description: getMessage(MessageType.swagger, 'users.errors.unauthorized'),
+    type: ApiResponseDto,
   })
   @ApiResponse({
     status: 403,
     description: getMessage(MessageType.swagger, 'users.errors.forbidden'),
+    type: ApiResponseDto,
   })
   async findAllByRole(
     @Res() res: Response,
@@ -100,22 +109,27 @@ export class UsersController {
   @ApiResponse({
     status: 202,
     description: getMessage(MessageType.swagger, 'users.success.findOne'),
+    type: [UsersResponseDto],
   })
   @ApiResponse({
     status: 400,
     description: getMessage(MessageType.swagger, 'users.errors.badRequest'),
+    type: ApiResponseDto,
   })
   @ApiResponse({
     status: 401,
     description: getMessage(MessageType.swagger, 'users.errors.unauthorized'),
+    type: ApiResponseDto,
   })
   @ApiResponse({
     status: 403,
     description: getMessage(MessageType.swagger, 'users.errors.forbidden'),
+    type: ApiResponseDto,
   })
   @ApiResponse({
     status: 404,
     description: getMessage(MessageType.swagger, 'users.errors.notFound'),
+    type: ApiResponseDto,
   })
   async findOne(@Res() res: Response, @Param('uuid') uuid: string) {
     const response = await this.usersService.findOneUserById(uuid);
@@ -130,18 +144,22 @@ export class UsersController {
   @ApiResponse({
     status: 202,
     description: getMessage(MessageType.swagger, 'users.success.update'),
+    type: String,
   })
   @ApiResponse({
     status: 400,
     description: getMessage(MessageType.swagger, 'users.errors.badRequest'),
+    type: ApiResponseDto,
   })
   @ApiResponse({
     status: 401,
     description: getMessage(MessageType.swagger, 'users.errors.unauthorized'),
+    type: ApiResponseDto,
   })
   @ApiResponse({
     status: 404,
     description: getMessage(MessageType.swagger, 'users.errors.notFound'),
+    type: ApiResponseDto,
   })
   async update(
     @Res() res: Response,
@@ -167,28 +185,34 @@ export class UsersController {
       MessageType.swagger,
       'users.success.createSubscription',
     ),
+    type: String,
   })
   @ApiResponse({
     status: 400,
     description: getMessage(MessageType.swagger, 'users.errors.badRequest'),
+    type: ApiResponseDto,
   })
   @ApiResponse({
     status: 401,
     description: getMessage(MessageType.swagger, 'users.errors.unauthorized'),
+    type: ApiResponseDto,
   })
   @ApiResponse({
     status: 403,
     description: getMessage(MessageType.swagger, 'users.errors.forbidden'),
+    type: ApiResponseDto,
   })
   @ApiResponse({
     status: 404,
     description: getMessage(MessageType.swagger, 'users.errors.notFound', {
       sponsorUuid: 'e328a2b0-8e7f-1dc3-0cc7-b9aed4baa0a2',
     }),
+    type: ApiResponseDto,
   })
   @ApiResponse({
     status: 409,
     description: getMessage(MessageType.swagger, 'users.errors.conflict'),
+    type: ApiResponseDto,
   })
   async createSubscription(
     @Param('sponsorUuid') sponsorUuid: string,
@@ -217,22 +241,27 @@ export class UsersController {
       MessageType.swagger,
       'users.success.findAllSubscriptions',
     ),
+    type: [UsersResponseDto],
   })
   @ApiResponse({
     status: 400,
     description: getMessage(MessageType.swagger, 'users.errors.badRequest'),
+    type: ApiResponseDto,
   })
   @ApiResponse({
     status: 401,
     description: getMessage(MessageType.swagger, 'users.errors.unauthorized'),
+    type: ApiResponseDto,
   })
   @ApiResponse({
     status: 403,
     description: getMessage(MessageType.swagger, 'users.errors.forbidden'),
+    type: ApiResponseDto,
   })
   @ApiResponse({
     status: 404,
     description: getMessage(MessageType.swagger, 'users.errors.notFound'),
+    type: ApiResponseDto,
   })
   async findAllSubscriptions(
     @Res() res: Response,
