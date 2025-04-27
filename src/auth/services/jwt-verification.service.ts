@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CognitoJwtVerifier } from 'aws-jwt-verify';
 import { iJwtVerificationService } from '.';
-import { getMessage, MessageType } from 'src/common';
+import { getMessage, MessageType } from '../../common';
 
 @Injectable()
 export class JwtVerificationService implements iJwtVerificationService {

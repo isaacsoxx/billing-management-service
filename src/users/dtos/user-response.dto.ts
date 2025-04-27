@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Transform } from 'class-transformer';
-import { UserRoles } from 'src/auth';
-import { getMessage, MessageType } from 'src/common';
+import { UserRoles } from '../../auth';
+import { getMessage, MessageType } from '../../common';
 
 export class UsersResponseDto {
   @ApiProperty({

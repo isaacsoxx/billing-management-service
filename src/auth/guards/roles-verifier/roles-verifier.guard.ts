@@ -6,8 +6,8 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { iAwsCognitoService } from 'src/auth/services';
-import { getMessage, MessageType } from 'src/common';
+import { iAwsCognitoService } from '../../../auth/services';
+import { getMessage, MessageType } from '../../../common';
 
 @Injectable()
 export class RolesVerifierGuard implements CanActivate {

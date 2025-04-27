@@ -13,7 +13,7 @@ import { ConfigService } from '@nestjs/config';
 import { iAwsCognitoService } from '.';
 import { AuthAttributesDto, UserRoles } from '..';
 import { Users } from '../../users';
-import { getMessage, MessageType } from 'src/common';
+import { getMessage, MessageType } from '../../common';
 
 @Injectable()
 export class AwsCognitoService implements iAwsCognitoService {
