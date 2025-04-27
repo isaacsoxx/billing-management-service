@@ -12,34 +12,41 @@ import { iUsersService } from '.';
 import { ApiResponseDto, getMessage, MessageType } from '../../common';
 import { iUsersRepository } from '../repository';
 import { Users } from '../entities';
-import { UserRoles } from '../../auth';
+import { iAwsCognitoService, UserRoles } from '../../auth';
 
 @Injectable()
 export class UsersService implements iUsersService {
   constructor(
     @Inject('iUsersRepository')
     private readonly usersRepository: iUsersRepository,
+    @Inject('iAwsCognitoService')
+    private readonly awsCognitoService: iAwsCognitoService,
   ) {}
 
   async createUser(
     userToCreate: UserRequestDto,
   ): Promise<ApiResponseDto<string>> {
-    const userResource = new Users(userToCreate);
-    userResource.uuid = randomUUID();
+    try {
+      const userResource = new Users(userToCreate);
+      userResource.uuid = randomUUID();
 
-    const result = await this.usersRepository.createUser(userResource);
+      await this.awsCognitoService.registerUser(userResource);
 
-    if (result instanceof Users) {
-      return ApiResponseDto.createSuccess(
-        HttpStatus.CREATED,
-        getMessage(MessageType.app, 'users.success.created'),
-        result.uuid,
+      const result = await this.usersRepository.createUser(userResource);
+
+      if (result instanceof Users) {
+        return ApiResponseDto.createSuccess(
+          HttpStatus.CREATED,
+          getMessage(MessageType.app, 'users.success.created'),
+          result.uuid,
+        );
+      }
+      throw new ConflictException(
+        getMessage(MessageType.app, 'users.errors.conflict'),
       );
+    } catch (error) {
+      throw error;
     }
-
-    throw new ConflictException(
-      getMessage(MessageType.app, 'users.errors.conflict'),
-    );
   }
 
   async updateUserById(

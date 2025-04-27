@@ -1,4 +1,4 @@
+export * from './messages';
 export * from './filters/generic-exceptions-filter';
+export * from './decorators/roles-decorator';
 export * from './dtos/api-response.dto';
-export * from './messages/messages';
-export * from './messages/message-type.enum';

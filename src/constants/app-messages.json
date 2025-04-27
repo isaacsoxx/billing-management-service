@@ -8,5 +8,20 @@
       "created": "User created.",
       "updated": "{{count}} user(s) updated."
     }
+  },
+  "aws": {
+    "errors": {
+      "notFound": "User identity couldn\t be found.",
+      "conflict": "Invalid user role {{role}}."
+    }
+  },
+  "auth": {
+    "errors": {
+      "forbidden": "You don't have neccessary permission to access this resource.",
+      "notFound": "User not found in request.",
+      "invalidTokenUnauthorized": "Provided token might be expired or invalid.",
+      "missingHeaderUnauthorized": "Authorization header is missing.",
+      "missingTokenUnauthorized": "Token was not provided."
+    }
   }
 }

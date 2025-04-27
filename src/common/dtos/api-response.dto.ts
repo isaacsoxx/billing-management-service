@@ -1,21 +1,30 @@
 import { HttpStatus } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
+import { getMessage, MessageType } from '..';
 
 export class ApiResponseDto<T> {
-  @ApiProperty()
+  @ApiProperty({
+    example: getMessage(MessageType.swagger, 'dtos.apiResponse.statusCode'),
+  })
   @Expose()
   statusCode: number = HttpStatus.OK;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: getMessage(MessageType.swagger, 'dtos.apiResponse.message'),
+  })
   @Expose()
   message: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: getMessage(MessageType.swagger, 'dtos.apiResponse.isSuccess'),
+  })
   @Expose()
   isSuccess?: boolean;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: getMessage(MessageType.swagger, 'dtos.apiResponse.data'),
+  })
   @Expose()
   data?: T;
 

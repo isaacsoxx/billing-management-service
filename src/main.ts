@@ -19,6 +19,16 @@ async function bootstrap() {
     .setTitle('Billing Management Service API')
     .setDescription('Service API model for bussiness billing administration.')
     .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description:
+          'Insert the access token below, without the Bearer prefix.',
+      },
+      'access-token',
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

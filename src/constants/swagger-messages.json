@@ -11,7 +11,9 @@
     "errors": {
       "conflict": "User was not created.",
       "notFound": "User which provided uuid was not found.",
-      "badRequest": "User request contains errors or query params are incorrect."
+      "badRequest": "User request contains errors or query params are incorrect.",
+      "forbidden": "Logged session doesn't have enough permissions to access resource.",
+      "unauthorized": "Either the authorization header is missing or the token is invalid or not provided, or the user role could'nt be identified."
     },
     "success": {
       "create": "User created.",
@@ -20,8 +22,10 @@
       "update": "Returns how many users were updated.",
       "createSubscription": "User successfully created.",
       "findAllSubscriptions": "List of uuid matched subscriptions."
-    },
-    "dtos": {
+    }
+  },
+  "dtos": {
+    "userRequest": {
       "firstName": {
         "example": "John",
         "description": "Required user first name."
@@ -29,6 +33,10 @@
       "lastName": {
         "example": "Doe",
         "description": "Optional user last name."
+      },
+      "phoneNumber": {
+        "example": "+50687011590",
+        "description": "Required user's phone number."
       },
       "isActive": {
         "example": "true | false",
@@ -39,6 +47,21 @@
         "description": "Role for the user.",
         "message": "Role must be either: maintainer, admin or staff."
       }
+    },
+    "userResponse": {
+      "uuid": "string",
+      "firstName": "string",
+      "lastName": "string",
+      "phoneNumber": "number",
+      "isActive": "boolean",
+      "role": "UserRoles",
+      "sponsor": "string"
+    },
+    "apiResponse": {
+      "statusCode": "number",
+      "message": "string",
+      "isSuccess": "boolean",
+      "data": "Object"
     }
   }
 }

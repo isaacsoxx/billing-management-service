@@ -1,4 +1,4 @@
-import { AppMessages, SwaggerMessages } from 'src/constants';
+import { AppMessages, SwaggerMessages } from '../../constants';
 import { MessageType } from '..';
 
 export const getMessage = (

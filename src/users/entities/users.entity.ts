@@ -11,6 +11,7 @@ import { UserRoles } from '../../auth';
 
 @Entity()
 @Unique('UUID_UNIQUE', ['uuid'])
+@Unique('PHONE_NUMBER_UNIQUE', ['phoneNumber'])
 export class Users {
   @ObjectIdColumn()
   _id: ObjectId;
@@ -18,11 +19,14 @@ export class Users {
   @PrimaryGeneratedColumn('uuid')
   uuid: string;
 
-  @Column()
+  @Column({ type: 'string', nullable: false })
   firstName: string;
 
-  @Column()
-  lastName: string;
+  @Column({ type: 'string', nullable: true })
+  lastName?: string;
+
+  @Column({ type: 'string', nullable: false })
+  phoneNumber: string;
 
   @Column({ type: 'string', nullable: true })
   sponsor?: string;

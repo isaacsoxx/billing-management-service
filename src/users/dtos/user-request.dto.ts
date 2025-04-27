@@ -6,25 +6,31 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { UserRoles } from 'src/auth';
-import { getMessage, MessageType } from 'src/common';
+import { UserRoles } from '../../auth';
+import { getMessage, MessageType } from '../../common';
 
 export class UserRequestDto {
   @ApiProperty({
-    example: getMessage(MessageType.swagger, 'users.dtos.firstName.example'),
+    example: getMessage(
+      MessageType.swagger,
+      'dtos.userRequest.firstName.example',
+    ),
     description: getMessage(
       MessageType.swagger,
-      'users.dtos.firstName.description',
+      'dtos.userRequest.firstName.description',
     ),
   })
   @IsString()
   firstName: string;
 
   @ApiPropertyOptional({
-    example: getMessage(MessageType.swagger, 'users.dtos.lastName.example'),
+    example: getMessage(
+      MessageType.swagger,
+      'dtos.userRequest.lastName.example',
+    ),
     description: getMessage(
       MessageType.swagger,
-      'users.dtos.lastName.description',
+      'dtos.userRequest.lastName.description',
     ),
   })
   @IsString()
@@ -32,23 +38,42 @@ export class UserRequestDto {
   lastName: string;
 
   @ApiProperty({
-    example: getMessage(MessageType.swagger, 'users.dtos.isActive.example'),
+    example: getMessage(
+      MessageType.swagger,
+      'dtos.userRequest.phoneNumber.example',
+    ),
     description: getMessage(
       MessageType.swagger,
-      'users.dtos.isActive.description',
+      'dtos.userRequest.phoneNumber.description',
+    ),
+  })
+  @IsString()
+  phoneNumber: string;
+
+  @ApiProperty({
+    example: getMessage(
+      MessageType.swagger,
+      'dtos.userRequest.isActive.example',
+    ),
+    description: getMessage(
+      MessageType.swagger,
+      'dtos.userRequest.isActive.description',
     ),
   })
   @IsBoolean()
   isActive: boolean = true;
 
   @ApiProperty({
-    example: getMessage(MessageType.swagger, 'users.dtos.role.example'),
+    example: getMessage(MessageType.swagger, 'dtos.userRequest.role.example'),
     enum: UserRoles,
     enumName: 'UserRoles',
-    description: getMessage(MessageType.swagger, 'users.dtos.role.description'),
+    description: getMessage(
+      MessageType.swagger,
+      'dtos.userRequest.role.description',
+    ),
   })
   @IsEnum(UserRoles, {
-    message: getMessage(MessageType.swagger, 'users.dtos.role.message'),
+    message: getMessage(MessageType.swagger, 'dtos.userRequest.role.message'),
   })
   @IsNotEmpty({ message: 'Role is required.' })
   role: UserRoles;
