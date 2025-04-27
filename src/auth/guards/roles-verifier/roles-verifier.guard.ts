@@ -1,9 +1,9 @@
 import {
   CanActivate,
   ExecutionContext,
-  ForbiddenException,
   Inject,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { iAwsCognitoService } from 'src/auth/services';
@@ -22,7 +22,9 @@ export class RolesVerifierGuard implements CanActivate {
       requiredRoles = this.getRequiredRoles(context);
 
     if (!user) {
-      throw new UnauthorizedException('User not found in request.');
+      throw new NotFoundException(
+        getMessage(MessageType.app, 'auth.errors.notFound'),
+      );
     }
 
     const authAttributes = await this.awsCognitoService.getAuthAttributes(
@@ -30,7 +32,7 @@ export class RolesVerifierGuard implements CanActivate {
     );
 
     if (!requiredRoles.includes(authAttributes.role)) {
-      throw new ForbiddenException(
+      throw new UnauthorizedException(
         getMessage(MessageType.app, 'auth.errors.forbidden'),
       );
     }

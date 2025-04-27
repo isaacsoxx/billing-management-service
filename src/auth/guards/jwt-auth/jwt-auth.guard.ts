@@ -6,6 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { iJwtVerificationService } from '../..';
+import { getMessage, MessageType } from 'src/common';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -18,12 +19,16 @@ export class JwtAuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const authHeader = request.headers['authorization'];
     if (!authHeader) {
-      throw new UnauthorizedException('Authorization header is missing.');
+      throw new UnauthorizedException(
+        getMessage(MessageType.app, 'auth.errors.missingHeaderUnauthorized'),
+      );
     }
 
     const token = authHeader.split(' ')[1];
     if (!token) {
-      throw new UnauthorizedException('Token was not provided.');
+      throw new UnauthorizedException(
+        getMessage(MessageType.app, 'auth.errors.missingTokenUnauthorized'),
+      );
     }
 
     const decodedToken = await this.jwtVerificationService.verifyToken(token);

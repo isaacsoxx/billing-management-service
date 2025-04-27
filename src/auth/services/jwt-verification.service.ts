@@ -22,7 +22,7 @@ export class JwtVerificationService implements iJwtVerificationService {
       return payload;
     } catch (error) {
       throw new UnauthorizedException(
-        getMessage(MessageType.app, 'auth.errors.unauthorized'),
+        getMessage(MessageType.app, 'auth.errors.invalidTokenUnauthorized'),
       );
     }
   }

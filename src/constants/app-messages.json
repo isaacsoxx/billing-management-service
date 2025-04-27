@@ -18,7 +18,10 @@
   "auth": {
     "errors": {
       "forbidden": "You don't have neccessary permission to access this resource.",
-      "unauthorized": "Provided token might be expired or invalid."
+      "notFound": "User not found in request.",
+      "invalidTokenUnauthorized": "Provided token might be expired or invalid.",
+      "missingHeaderUnauthorized": "Authorization header is missing.",
+      "missingTokenUnauthorized": "Token was not provided."
     }
   }
 }

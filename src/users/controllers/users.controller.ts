@@ -42,6 +42,14 @@ export class UsersController {
     description: getMessage(MessageType.swagger, 'users.errors.badRequest'),
   })
   @ApiResponse({
+    status: 401,
+    description: getMessage(MessageType.swagger, 'users.errors.unauthorized'),
+  })
+  @ApiResponse({
+    status: 403,
+    description: getMessage(MessageType.swagger, 'users.errors.forbidden'),
+  })
+  @ApiResponse({
     status: 409,
     description: getMessage(MessageType.swagger, 'users.errors.conflict'),
   })
@@ -67,6 +75,14 @@ export class UsersController {
     status: 400,
     description: getMessage(MessageType.swagger, 'users.errors.badRequest'),
   })
+  @ApiResponse({
+    status: 401,
+    description: getMessage(MessageType.swagger, 'users.errors.unauthorized'),
+  })
+  @ApiResponse({
+    status: 403,
+    description: getMessage(MessageType.swagger, 'users.errors.forbidden'),
+  })
   async findAllByRole(
     @Res() res: Response,
     @Query('role', new ParseEnumPipe(UserRoles)) role: UserRoles,
@@ -90,6 +106,14 @@ export class UsersController {
     description: getMessage(MessageType.swagger, 'users.errors.badRequest'),
   })
   @ApiResponse({
+    status: 401,
+    description: getMessage(MessageType.swagger, 'users.errors.unauthorized'),
+  })
+  @ApiResponse({
+    status: 403,
+    description: getMessage(MessageType.swagger, 'users.errors.forbidden'),
+  })
+  @ApiResponse({
     status: 404,
     description: getMessage(MessageType.swagger, 'users.errors.notFound'),
   })
@@ -100,7 +124,6 @@ export class UsersController {
 
   @Put(':uuid')
   @UseGuards(RolesVerifierGuard)
-  @Roles(UserRoles.Maintainer, UserRoles.Admin)
   @ApiOperation({
     summary: getMessage(MessageType.swagger, 'users.summary.update'),
   })
@@ -111,6 +134,10 @@ export class UsersController {
   @ApiResponse({
     status: 400,
     description: getMessage(MessageType.swagger, 'users.errors.badRequest'),
+  })
+  @ApiResponse({
+    status: 401,
+    description: getMessage(MessageType.swagger, 'users.errors.unauthorized'),
   })
   @ApiResponse({
     status: 404,
@@ -144,6 +171,14 @@ export class UsersController {
   @ApiResponse({
     status: 400,
     description: getMessage(MessageType.swagger, 'users.errors.badRequest'),
+  })
+  @ApiResponse({
+    status: 401,
+    description: getMessage(MessageType.swagger, 'users.errors.unauthorized'),
+  })
+  @ApiResponse({
+    status: 403,
+    description: getMessage(MessageType.swagger, 'users.errors.forbidden'),
   })
   @ApiResponse({
     status: 404,
@@ -186,6 +221,14 @@ export class UsersController {
   @ApiResponse({
     status: 400,
     description: getMessage(MessageType.swagger, 'users.errors.badRequest'),
+  })
+  @ApiResponse({
+    status: 401,
+    description: getMessage(MessageType.swagger, 'users.errors.unauthorized'),
+  })
+  @ApiResponse({
+    status: 403,
+    description: getMessage(MessageType.swagger, 'users.errors.forbidden'),
   })
   @ApiResponse({
     status: 404,
