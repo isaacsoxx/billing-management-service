@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Transform } from 'class-transformer';
 import { UserRoles } from 'src/auth';
 
-export class UserResponseDto {
+export class UsersResponseDto {
   @ApiProperty()
   @Expose()
   uuid: string;

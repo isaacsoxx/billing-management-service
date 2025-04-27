@@ -1,6 +1,6 @@
 import { UserRoles } from '../../../auth';
 import { ApiResponseDto } from '../../../common';
-import { UserResponseDto, UserRequestDto } from '../..';
+import { UsersResponseDto, UserRequestDto } from '../..';
 
 export interface iUsersService {
   createUser(userToCreate: UserRequestDto): Promise<ApiResponseDto<string>>;
@@ -10,7 +10,7 @@ export interface iUsersService {
   ): Promise<ApiResponseDto<null>>;
   findOneUserById(
     uuid: string,
-  ): Promise<ApiResponseDto<UserResponseDto | null>>;
+  ): Promise<ApiResponseDto<UsersResponseDto | null>>;
 
   createSubscription(
     sponsorId: string,
@@ -18,6 +18,6 @@ export interface iUsersService {
   ): Promise<ApiResponseDto<string>>;
   findAllSubscriptionsById(
     sponsorId: string,
-  ): Promise<ApiResponseDto<UserResponseDto[]>>;
-  findAllByRole(role: UserRoles): Promise<ApiResponseDto<UserResponseDto[]>>;
+  ): Promise<ApiResponseDto<UsersResponseDto[]>>;
+  findAllByRole(role: UserRoles): Promise<ApiResponseDto<UsersResponseDto[]>>;
 }

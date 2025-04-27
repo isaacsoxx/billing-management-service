@@ -5,7 +5,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { UserResponseDto as UserResponseDto, UserRequestDto } from '..';
+import { UsersResponseDto, UserRequestDto } from '..';
 import { plainToInstance } from 'class-transformer';
 import { randomUUID } from 'crypto';
 import { iUsersService } from '.';
@@ -66,14 +66,14 @@ export class UsersService implements iUsersService {
 
   async findOneUserById(
     uuid: string,
-  ): Promise<ApiResponseDto<UserResponseDto | null>> {
+  ): Promise<ApiResponseDto<UsersResponseDto | null>> {
     const result = await this.usersRepository.findOneUserById(uuid);
 
     if (result) {
       return ApiResponseDto.createSuccess(
         HttpStatus.ACCEPTED,
         '',
-        plainToInstance(UserResponseDto, result, {
+        plainToInstance(UsersResponseDto, result, {
           excludeExtraneousValues: true,
         }),
       );
@@ -120,7 +120,7 @@ export class UsersService implements iUsersService {
 
   async findAllSubscriptionsById(
     sponsorId: string,
-  ): Promise<ApiResponseDto<UserResponseDto[]>> {
+  ): Promise<ApiResponseDto<UsersResponseDto[]>> {
     const resourceFound = await this.usersRepository.findOneUserById(sponsorId);
 
     if (resourceFound) {
@@ -129,7 +129,7 @@ export class UsersService implements iUsersService {
       return ApiResponseDto.createSuccess(
         HttpStatus.ACCEPTED,
         '',
-        plainToInstance(UserResponseDto, result, {
+        plainToInstance(UsersResponseDto, result, {
           excludeExtraneousValues: true,
         }),
       );
@@ -142,12 +142,12 @@ export class UsersService implements iUsersService {
 
   async findAllByRole(
     role: UserRoles,
-  ): Promise<ApiResponseDto<UserResponseDto[]>> {
+  ): Promise<ApiResponseDto<UsersResponseDto[]>> {
     const result = await this.usersRepository.findAllByRole(role);
     return ApiResponseDto.createSuccess(
       HttpStatus.ACCEPTED,
       '',
-      plainToInstance(UserResponseDto, result, {
+      plainToInstance(UsersResponseDto, result, {
         excludeExtraneousValues: true,
       }),
     );

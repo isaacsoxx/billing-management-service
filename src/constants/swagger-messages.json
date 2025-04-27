@@ -20,6 +20,25 @@
       "update": "Returns how many users were updated.",
       "createSubscription": "User successfully created.",
       "findAllSubscriptions": "List of uuid matched subscriptions."
+    },
+    "dtos": {
+      "firstName": {
+        "example": "John",
+        "description": "Required user first name."
+      },
+      "lastName": {
+        "example": "Doe",
+        "description": "Optional user last name."
+      },
+      "isActive": {
+        "example": "true | false",
+        "description": "If the user will be deactivated or activated by default."
+      },
+      "role": {
+        "example": "maintainer | admin | staff",
+        "description": "Role for the user.",
+        "message": "Role must be either: maintainer, admin or staff."
+      }
     }
   }
 }
