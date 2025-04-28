@@ -25,7 +25,6 @@ jobs:
 
       - name: npm install, build, and test
         run: |
-          npm install
           npm run build --if-present
           npm run test --if-present
 
@@ -73,5 +72,8 @@ jobs:
           package: .
 
       - name: Clean up build artifacts
-        run: rm -f release.zip
+        run: rm -rf ./release.zip
+
+      - name: Install modules
+        run: npm install
           
