@@ -73,10 +73,10 @@ jobs:
           package: .
 
       - name: Clean up build artifacts
-        run: rm -rf /home/site/wwwroot/release.zip
+        run: rm -rf ~/site/wwwroot/release.zip
 
       - name: Install dependencies
         run: |
-          cd /home/site/wwwroot/
+          cd ~/site/wwwroot/
           npm install
           
