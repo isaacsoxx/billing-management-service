@@ -26,9 +26,14 @@ export class UsersRepository implements iUsersRepository {
 
     return result;
   }
-  async findAllByRole(role: UserRoles): Promise<Users[]> {
+
+  async findAll(): Promise<Users[]> {
     return await this.usersRepository.find({
-      where: { role },
+      where: {
+        role: {
+          $in: [UserRoles.Admin, UserRoles.Maintainer],
+        },
+      } as any,
     });
   }
 

@@ -14,6 +14,11 @@ async function bootstrap() {
     }),
   );
   app.useGlobalFilters(new GenericExceptionsFilter());
+  app.enableCors({
+    origin: 'http://localhost:4200',
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
 
   const config = new DocumentBuilder()
     .setTitle('Billing Management Service API')

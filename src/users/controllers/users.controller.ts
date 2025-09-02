@@ -70,17 +70,12 @@ export class UsersController {
   @UseGuards(RolesVerifierGuard)
   @Roles(UserRoles.Maintainer)
   @ApiOperation({
-    summary: getMessage(MessageType.swagger, 'users.summary.findAllByRole'),
+    summary: getMessage(MessageType.swagger, 'users.summary.findAll'),
   })
   @ApiResponse({
     status: 202,
-    description: getMessage(MessageType.swagger, 'users.success.findAllByRole'),
+    description: getMessage(MessageType.swagger, 'users.success.findAll'),
     type: [UsersResponseDto],
-  })
-  @ApiResponse({
-    status: 400,
-    description: getMessage(MessageType.swagger, 'users.errors.badRequest'),
-    type: ApiResponseDto,
   })
   @ApiResponse({
     status: 401,
@@ -92,11 +87,8 @@ export class UsersController {
     description: getMessage(MessageType.swagger, 'users.errors.forbidden'),
     type: ApiResponseDto,
   })
-  async findAllByRole(
-    @Res() res: Response,
-    @Query('role', new ParseEnumPipe(UserRoles)) role: UserRoles,
-  ) {
-    const response = await this.usersService.findAllByRole(role);
+  async findAll(@Res() res: Response) {
+    const response = await this.usersService.findAll();
     return res.status(response.statusCode).json(response);
   }
 

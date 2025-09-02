@@ -19,5 +19,5 @@ export interface iUsersService {
   findAllSubscriptionsById(
     sponsorId: string,
   ): Promise<ApiResponseDto<UsersResponseDto[]>>;
-  findAllByRole(role: UserRoles): Promise<ApiResponseDto<UsersResponseDto[]>>;
+  findAll(): Promise<ApiResponseDto<UsersResponseDto[]>>;
 }

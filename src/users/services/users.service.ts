@@ -102,6 +102,8 @@ export class UsersService implements iUsersService {
       const subscriptionResource = new Users(userToCreate);
       subscriptionResource.uuid = randomUUID();
       subscriptionResource.sponsor = sponsorUuid;
+      await this.awsCognitoService.registerUser(subscriptionResource);
+
       const result =
         await this.usersRepository.createUser(subscriptionResource);
 
@@ -147,10 +149,8 @@ export class UsersService implements iUsersService {
     );
   }
 
-  async findAllByRole(
-    role: UserRoles,
-  ): Promise<ApiResponseDto<UsersResponseDto[]>> {
-    const result = await this.usersRepository.findAllByRole(role);
+  async findAll(): Promise<ApiResponseDto<UsersResponseDto[]>> {
+    const result = await this.usersRepository.findAll();
     return ApiResponseDto.createSuccess(
       HttpStatus.ACCEPTED,
       '',

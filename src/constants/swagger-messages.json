@@ -2,7 +2,7 @@
   "users": {
     "summary": {
       "create": "This action will allow to create one user per request.",
-      "findAllByRole": "This action will retrieve all users by role.",
+      "findAll": "This action will retrieve all maintainers or admins users.",
       "findOne": "This action will retrieve the user that matches against the provided uuid.",
       "update": "This action will update the fields inside the request against the uuid matched user.",
       "createSubscription": "This action will allow to create one subscription to any uuid provided sponsor.",
@@ -17,7 +17,7 @@
     },
     "success": {
       "create": "User created.",
-      "findAllByRole": "List of matched users by role.",
+      "findAll": "List of maintainer or admin users found.",
       "findOne": "List of uuid matched users.",
       "update": "Returns how many users were updated.",
       "createSubscription": "User successfully created.",
