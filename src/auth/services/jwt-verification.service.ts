@@ -12,7 +12,7 @@ export class JwtVerificationService implements iJwtVerificationService {
     this.verifier = CognitoJwtVerifier.create({
       userPoolId: this.configService.get<string>('aws_pool_id')!,
       tokenUse: 'access',
-      clientId: this.configService.get<string>('aws_client_id')!,
+      clientId: this.configService.get<string>('aws_ui_pool_client_id')!,
     });
   }
 

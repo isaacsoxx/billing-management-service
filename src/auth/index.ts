@@ -3,3 +3,4 @@ export * from './services';
 export * from './auth.module';
 export * from './enums/user-role.enum';
 export * from './dtos/auth-attributes.dto';
+export * from './dtos/trust-device-request.dto';

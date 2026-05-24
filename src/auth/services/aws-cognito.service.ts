@@ -1,8 +1,10 @@
 import {
   AdminCreateUserCommand,
+  AdminListDevicesCommand,
   AdminSetUserPasswordCommand,
   CognitoIdentityProviderClient,
   ListUsersCommand,
+  UpdateDeviceStatusCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 import {
   ConflictException,
@@ -11,39 +13,52 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { iAwsCognitoService } from '.';
-import { AuthAttributesDto, UserRoles } from '..';
+import { AuthAttributesDto, UserRoles, TrustDeviceRequestDto } from '..';
 import { Users } from '../../users';
 import { getMessage, MessageType } from '../../common';
 
 @Injectable()
 export class AwsCognitoService implements iAwsCognitoService {
-  private cognito: CognitoIdentityProviderClient;
-  private userPoolId: string;
-  private accessKey: string;
-  private secretKey: string;
+  private cognitoApiClient: CognitoIdentityProviderClient;
+  private cognitoUiClient: CognitoIdentityProviderClient;
+  private poolId: string;
+  private adminAccessKey: string;
+  private adminSecretKey: string;
 
   constructor(private readonly configService: ConfigService) {
-    this.userPoolId = this.configService.get<string>('aws_pool_id')!;
-    this.accessKey = this.configService.get<string>('aws_access_key')!;
-    this.secretKey = this.configService.get<string>('aws_secret_key')!;
-    this.cognito = new CognitoIdentityProviderClient({
+    this.poolId = this.configService.get<string>('aws_pool_id')!;
+    this.adminAccessKey = this.configService.get<string>(
+      'aws_admin_access_key',
+    )!;
+    this.adminSecretKey = this.configService.get<string>(
+      'aws_admin_secret_key',
+    )!;
+
+    this.cognitoApiClient = new CognitoIdentityProviderClient({
       region: this.configService.get<string>('aws_region'),
       credentials: {
-        accessKeyId: this.accessKey,
-        secretAccessKey: this.secretKey,
+        accessKeyId: this.adminAccessKey,
+        secretAccessKey: this.adminSecretKey,
+      },
+    });
+    this.cognitoUiClient = new CognitoIdentityProviderClient({
+      region: this.configService.get<string>('aws_region'),
+      credentials: {
+        accessKeyId: this.adminAccessKey,
+        secretAccessKey: this.adminSecretKey,
       },
     });
   }
 
   async registerUser(userResource: Users): Promise<void> {
     try {
-      const username = userResource.phoneNumber,
-        tempPass = `${userResource.firstName}@${userResource.phoneNumber.slice(userResource.phoneNumber.length - 4)}`,
+      const username = userResource.emailAddress,
+        tempPass = `${userResource.firstName.toUpperCase().substring(1)}${userResource.lastName}@123`,
         role = userResource.role,
         uuid = userResource.uuid;
 
       await this.createUserInPool(username, tempPass, role, uuid);
-      await this.setPasswordPolicy(username, tempPass);
+      await this.setTemporalPassword(username, tempPass);
     } catch (error) {
       throw error;
     }
@@ -51,13 +66,13 @@ export class AwsCognitoService implements iAwsCognitoService {
 
   async getAuthAttributes(sub: string): Promise<AuthAttributesDto> {
     const params = {
-      UserPoolId: this.userPoolId,
+      UserPoolId: this.poolId,
       Filter: `sub="${sub}"`,
       Limit: 1,
     };
 
-    const command = new ListUsersCommand(params),
-      response = await this.cognito.send(command),
+    const listUsersCommand = new ListUsersCommand(params),
+      response = await this.cognitoUiClient.send(listUsersCommand),
       user = response.Users?.[0];
     let role, uuid;
 
@@ -84,23 +99,49 @@ export class AwsCognitoService implements iAwsCognitoService {
     };
   }
 
+  async registerTrustedDevice(
+    trustDeviceRequest: TrustDeviceRequestDto,
+    token: string,
+  ): Promise<any> {
+    try {
+      const updateDeviceTrustCommand = new UpdateDeviceStatusCommand({
+        AccessToken: token,
+        DeviceKey: trustDeviceRequest.deviceKey,
+        DeviceRememberedStatus: 'remembered',
+      });
+
+      return this.cognitoApiClient.send(updateDeviceTrustCommand);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getUserTrustedDevices(userSub: string) {
+    const listUserDevicesCommand = new AdminListDevicesCommand({
+      UserPoolId: this.poolId,
+      Username: userSub,
+    });
+
+    return await this.cognitoApiClient.send(listUserDevicesCommand);
+  }
+
   private async createUserInPool(
     username: string,
     tempPass: string,
     role: UserRoles,
     uuid: string,
   ) {
-    const createUserRequest = new AdminCreateUserCommand({
-      UserPoolId: this.userPoolId,
+    const createUserCommand = new AdminCreateUserCommand({
+      UserPoolId: this.poolId,
       Username: username,
       TemporaryPassword: tempPass,
       UserAttributes: [
         {
-          Name: 'phone_number',
+          Name: 'email',
           Value: username,
         },
         {
-          Name: 'phone_number_verified',
+          Name: 'email_verified',
           Value: 'true',
         },
         {
@@ -115,17 +156,17 @@ export class AwsCognitoService implements iAwsCognitoService {
       MessageAction: 'SUPPRESS',
     });
 
-    await this.cognito.send(createUserRequest);
+    await this.cognitoApiClient.send(createUserCommand);
   }
 
-  private async setPasswordPolicy(username: string, tempPass: string) {
-    const passwordPolicyRequest = new AdminSetUserPasswordCommand({
-      UserPoolId: this.userPoolId,
+  private async setTemporalPassword(username: string, tempPass: string) {
+    const createPasswordCommand = new AdminSetUserPasswordCommand({
+      UserPoolId: this.poolId,
       Username: username,
       Password: tempPass,
       Permanent: false,
     });
 
-    await this.cognito.send(passwordPolicyRequest);
+    await this.cognitoApiClient.send(createPasswordCommand);
   }
 }

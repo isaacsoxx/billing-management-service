@@ -48,7 +48,7 @@ export class UserRequestDto {
     ),
   })
   @IsString()
-  phoneNumber: string;
+  emailAddress: string;
 
   @ApiProperty({
     example: getMessage(
